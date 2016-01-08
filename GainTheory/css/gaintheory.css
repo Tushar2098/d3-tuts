@@ -1,0 +1,168 @@
+/******* A N I M A T I O N ********/
+
+div[ui-view].ng-enter {
+    -webkit-animation: fadeInRight 1s;
+    animation: fadeInRight 1s;
+}
+
+div[ui-view].ng-leave {
+    -webkit-animation: fadeOutRight 1s;
+    animation: fadeOutRight 1s;
+}
+
+
+/******* N A V B A R ******/
+
+.navbar {
+    padding: 0;
+    margin: 0;
+    height: 87px;
+}
+
+.navbar-default {
+    background-color: #fff;
+    border: none;
+    /*border-color: #e7e7e7;*/
+}
+
+.navbar-brand {
+    padding: 0;
+}
+
+#main-title {
+    height: 39px;
+    margin-left: 8px;
+    margin-top: 26px;
+    margin-bottom: 26px;
+    /*width: 628px;*/
+    /*font-family: HelveticaNeue-Thin;*/
+}
+
+#main-title>p {
+    font-size: 32px;
+    letter-spacing: 1.4px;
+    color: #595959;
+}
+
+.hide {
+    display: none;
+}
+
+.disable-click {
+    pointer-events: none;
+}
+
+
+/****** B O D Y *****/
+
+#chart-set ul>li {
+    padding: 22px 0;
+    border-bottom: 2px solid rgba(49, 49, 49, 0.2);
+    height: 78px;
+}
+
+#sidebar {
+    background: #4d8295;
+    width: 120px;
+    height: 763px;
+    float: left;
+}
+
+#content {
+    display: inline-block;
+    background: #77b5c7;
+    border-bottom: 2px solid rgba(49, 49, 49, 0.2);
+    width: 1174px;
+    height: 763px;
+}
+
+#annual-title {
+    margin-left: 38px;
+    margin-top: 185px;
+    font-size: 18px;
+    letter-spacing: 2.3px;
+    color: #fff;
+}
+
+#annual-stack-group-chart,
+#quarter-stack-group-chart {
+    margin-left: 38px;
+}
+
+#annual-wise,
+#sb-container {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#sb-container > #quartely-stack-chart {
+    height: 418px;
+    width: 590px;
+}
+
+#sb-container > #quartely-bubble-chart {
+    height: 418px;
+    width: 570px;
+}
+
+#sb-container #quarter-title,
+#bubble-title {
+    margin-top: 25px;
+    margin-left: 38px;
+    font-size: 18px;
+    letter-spacing: 2.3px;
+    color: #fff;
+}
+
+#quarter-title {
+    display: inline-block;
+}
+
+#sb-container div {
+    float: left;
+}
+
+#sb-container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#heat-map {
+    margin-top: 10px;
+    width: 400px;
+    margin-left: 37%;
+}
+
+#close {
+    display: inline-block;
+    margin-top: 23px;
+    color: #fff;
+    float: right;
+    font-weight: bolder;
+    font-size: 18px;
+    cursor: pointer;
+    padding-top: 1px;
+    margin-right: 28.3px;
+}
+
+
+/*****************CHARTS****************/
+
+.axis path,
+.axis line {
+    fill: none;
+    /*stroke: #000;*/
+    shape-rendering: crispEdges;
+}
+
+text {
+    fill: #fff;
+}
+
+.bar {
+    fill: steelblue;
+}
+
+.x.axis path {
+    display: none;
+}

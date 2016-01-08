@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<style>
+body {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+
+/* 
+.bar {
+    fill: steelblue;
+} */
+
+.x.axis path {
+    display: none;
+}
+</style>
+
+<body>
+
+    <div class="gridster">
+        <ul>
+            <li id="graph1" data-row="1" data-col="1" data-sizex="1" data-sizey="1"></li>
+            <li id="graph2" data-row="1" data-col="1" data-sizex="1" data-sizey="1"></li>
+        </ul>
+    </div>
+
+
+
+
+    <script src="jQuery.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="jquery.draggable.js"></script>
+    <script src="jquery.gridster.js"></script>
+    <script src="utils.js"></script>
+    <script src="jquery.coords.js"></script>
+    <script src="jquery.collision.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

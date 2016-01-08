@@ -1,0 +1,17 @@
+Country,Product,Quarter,Adv,Rev
+IND,Coke,Q1,20,250
+IND,Fanta,Q1,15,190
+IND,Orange,Q1,12,150
+IND,Lemon,Q1,16,200
+IND,Coke,Q2,25,300
+IND,Fanta,Q2,20,240
+IND,Orange,Q2,18,200
+IND,Lemon,Q2,22,200
+CAN,Coke,Q1,40,500
+CAN,Fanta,Q1,30,380
+CAN,Orange,Q1,24,300
+CAN,Lemon,Q1,32,400
+CAN,Coke,Q2,40,500
+CAN,Fanta,Q2,30,380
+CAN,Orange,Q2,24,300
+CAN,Lemon,Q2,32,400

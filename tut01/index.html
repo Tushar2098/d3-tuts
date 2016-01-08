@@ -1,19 +1,287 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- <!DOCTYPE html>
+<html lang='en'>
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset='UTF-8'>
     <title>d3 Tuts</title>
 </head>
 
 <body>
-    <div class="someclass">
+    <div class='someclass'>
         <h2>Create A Bar Chart With D3 JavaScript</h2>
-        <div id="bar-chart">
+        <div id='bar-chart'>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.js"></script>
-    <script src="script.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.js'></script>
+    <script src='script.js'></script>
+</body>
+
+</html>
+ -->
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <title>dc.js - US Venture Capital Landscape 2011</title>
+    <meta charset='UTF-8'>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7' crossorigin='anonymous'>
+    <link rel='stylesheet' type='text/css' href='./css/dc.css' />
+</head>
+
+<body>
+    <div class='container'>
+        <h2>US Venture Capital Landscape 2011</h2>
+        <p>
+            This is a <a href='../index.html'>dc.js</a> example showing how GeoJson Polygon can be associated with crossfilter dimension and group using a choropleth chart. Different regions can be colored differently based on different calculation (amount raised). Like any other dc.js chart a choropleth chart can then be mixed with other dc.js chart or your own custom d3 drawing. In this example we have shown how it can work with multiple bubble chart.
+        </p>
+        <p>
+            Public data source
+            <a href='http://buzzdata.com/azad2002/the-united-states-of-venture-capital-2011#!/data' target='_blank'>BuzzData.com</a>.
+        </p>
+        <div id='us-chart' style="width:160px">
+            <strong>VC Distribution by States (color: total amount raised)</strong>
+            <a class='reset' href='javascript:usChart.filterAll();dc.redrawAll();' style='display: none;'>reset</a>
+            <span class='reset' style='display: none;'> | Current filter: <span class='filter'></span></span>
+            <div class='clearfix'></div>
+        </div>
+        <div class='clearfix'></div>
+        <div id='industry-chart'>
+            <strong>By Industries</strong> (y: number of deals, x: total amount raised in millions, radius: amount raised)
+            <a class='reset' href='javascript:industryChart.filterAll();dc.redrawAll();' style='display: none;'>reset</a>
+            <div class='clearfix'></div>
+        </div>
+        <div class='clearfix'></div>
+        <!--div id='round-chart'>
+            <strong>By Rounds</strong> (y: number of deals, x: total amount raised in millions, radius: amount raised)
+            <a class='reset' href='javascript:roundChart.filterAll();dc.redrawAll();' style='display: none;'>reset</a>
+            <div class='clearfix'></div>
+        </div>-->
+        <div class='clearfix'></div>
+        <div>
+            <a href='javascript:dc.filterAll(); dc.renderAll();'>Reset All</a>
+        </div>
+    </div>
+    <a href='https://github.com/dc-js/dc.js'><img style='position: absolute; top: 0; right: 0; border: 0;' src='https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png' alt='Fork me on GitHub'></a>
+    <script type='text/javascript' src='d3.js'></script>
+    <!-- <script type='text/javascript' src='crossfilter.js'></script> -->
+    <script src='https://rawgithub.com/NickQiZhu/dc.js/master/web/js/crossfilter.js'></script>
+    <script type='text/javascript' src='dc.js'></script>
+    <script type='text/javascript'>
+    'use strict';
+    /* global d3,dc,$,crossfilter */
+    var numberFormat = d3.format('.2f');
+
+
+    var projection = d3.geo.mercator()
+        .center([0, 5])
+        .scale(900)
+        .rotate([-180, 0]);
+
+    var path = d3.geo.path()
+        .projection(projection);
+
+
+
+    var usChart = dc.geoChoroplethChart('#us-chart');
+    var industryChart = dc.bubbleChart('#industry-chart');
+    var roundChart = dc.bubbleChart('#round-chart');
+
+    d3.csv('country.csv', function(csv) {
+        var data = crossfilter(csv);
+
+        var states = data.dimension(function(d) {
+            return d['Country'];
+        });
+
+        var stateRaisedSum = states.group().reduceSum(function(d) {
+            return d['Rev'];
+        });
+
+        var industries = data.dimension(function(d) {
+            return d['Product'];
+        });
+
+
+        var statsByIndustries = industries.group().reduce(
+            function(p, v) {
+                console.log('p :: ', p);
+                if (v['Quarter'] == 'Q1') {
+                    p.amountRaised += +v['Rev'];
+                    p.amountSpent += +v['Adv'];
+                }
+
+                return p;
+            },
+            function(p, v) {
+                if (v['Quarter'] == 'Q1') {
+                    p.amountRaised -= +v['Rev'];
+                    p.amountSpent -= +v['Adv'];
+                }
+                return p;
+            },
+            function() {
+                return {
+                    amountRaised: 0,
+                    amountSpent: 0
+                };
+            }
+        );
+
+        // var rounds = data.dimension(function(d) {
+        //     return d['RoundClassDescr'];
+        // });
+        // var statsByRounds = rounds.group().reduce(
+        //     function(p, v) {
+        //         p.amountRaised += +v['Raised'];
+        //         p.deals += +v['Deals'];
+        //         return p;
+        //     },
+        //     function(p, v) {
+        //         p.amountRaised -= +v['Raised'];
+        //         if (p.amountRaised < 0.001) p.amountRaised = 0; // do some clean up
+        //         p.deals -= +v['Deals'];
+        //         return p;
+        //     },
+        //     function() {
+        //         return {
+        //             amountRaised: 0,
+        //             deals: 0
+        //         };
+        //     }
+        // );
+
+        d3.json('world.json', function(statesJson) {
+            var width = 1060;
+            var height = 300;
+            usChart.width(width)
+                .height(height)
+                .dimension(states)
+                .group(stateRaisedSum)
+                .projection(d3.geo.mercator()
+                    .scale((height + 1) / 2 / Math.PI)
+                    .translate([height / 2, height / 2])
+                    .precision(0.1))
+                .colors(d3.scale.quantize().range(['#E2F2FF', '#C4E4FF', '#9ED2FF', '#81C5FF', '#6BBAFF', '#51AEFF', '#36A2FF', '#1E96FF', '#0089FF', '#0061B5']))
+                .colorDomain([0, 200])
+                .colorCalculator(function(d) {
+                    return d ? usChart.colors()(d) : '#ccc';
+                })
+                .overlayGeoJson(statesJson.features, 'state', function(d) {
+                    return d.id;
+                })
+                .title(function(d) {
+                    return 'State: ' + d.key + '\nTotal Amount Raised: ' + numberFormat(d.value ? d.value : 0) + 'M';
+                });
+
+
+
+            industryChart.width(990)
+                .height(200)
+                .margins({
+                    top: 10,
+                    right: 50,
+                    bottom: 30,
+                    left: 60
+                })
+                .dimension(industries)
+                .group(statsByIndustries)
+                .colors(d3.scale.category10())
+                .keyAccessor(function(p) {
+                    return p.value.amountSpent;
+                })
+                .valueAccessor(function(p) {
+                    return p.value.amountRaised;
+                })
+                .radiusValueAccessor(function(p) {
+                    return p.value.amountRaised;
+                })
+                .x(d3.scale.linear().domain([0, 5000]))
+                .r(d3.scale.linear().domain([0, 4000]))
+                .minRadiusWithLabel(15)
+                .elasticY(true)
+                .yAxisPadding(100)
+                .elasticX(true)
+                .xAxisPadding(200)
+                .maxBubbleRelativeSize(0.07)
+                .renderHorizontalGridLines(true)
+                .renderVerticalGridLines(true)
+                .renderLabel(true)
+                .renderTitle(true)
+                .title(function(p) {
+                    return p.key + '\n' + 'Amount Raised: ' + numberFormat(p.value.amountRaised) + 'M\n' + 'Number of Deals: ' + numberFormat(p.value.amountSpent);
+                });
+
+
+
+
+            industryChart.yAxis().tickFormat(function(s) {
+                return s + ' Earned';
+            });
+            industryChart.xAxis().tickFormat(function(s) {
+                return s + 'Spent';
+            });
+
+
+            // roundChart.width(990)
+            //     .height(200)
+            //     .margins({
+            //         top: 10,
+            //         right: 50,
+            //         bottom: 30,
+            //         left: 60
+            //     })
+            //     .dimension(rounds)
+            //     .group(statsByRounds)
+            //     .colors(d3.scale.category10())
+            //     .keyAccessor(function(p) {
+            //         return p.value.amountRaised;
+            //     })
+            //     .valueAccessor(function(p) {
+            //         return p.value.deals;
+            //     })
+            //     .radiusValueAccessor(function(p) {
+            //         return p.value.amountRaised;
+            //     })
+            //     .x(d3.scale.linear().domain([0, 5000]))
+            //     .r(d3.scale.linear().domain([0, 9000]))
+            //     .minRadiusWithLabel(15)
+            //     .elasticY(true)
+            //     .yAxisPadding(150)
+            //     .elasticX(true)
+            //     .xAxisPadding(300)
+            //     .maxBubbleRelativeSize(0.07)
+            //     .renderHorizontalGridLines(true)
+            //     .renderVerticalGridLines(true)
+            //     .renderLabel(true)
+            //     .renderTitle(true)
+            //     .title(function(p) {
+            //         return p.key + '\n' + 'Amount Raised: ' + numberFormat(p.value.amountRaised) + 'M\n' + 'Number of Deals: ' + numberFormat(p.value.deals);
+            //     });
+            // roundChart.yAxis().tickFormat(function(s) {
+            //     return s + ' deals';
+            // });
+            // roundChart.xAxis().tickFormat(function(s) {
+            //     return s + 'M';
+            // });
+
+            dc.renderAll();
+        });
+    });
+    </script>
+    <script type='text/javascript'>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-33628816-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
 </body>
 
 </html>
