@@ -1,14 +1,13 @@
 var ApplicationController = function($scope) {
     $scope.quarterlyChart = {
-        width : 1100,
-        products:[]        
-    };
-
-    $scope.getProductInfo = function() {
-        $scope.quarterlyChart = {
-            width : 530,
-            products:[]
-        };
+        width: 1100,
+        products: [],
+        isStackActive : false,
+        showBubble : false,
+        selectedProducts: {
+            quarter: '',
+            products: []
+        }
     };
 };
 

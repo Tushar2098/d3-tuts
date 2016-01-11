@@ -1,19 +1,22 @@
 <div>
     <div id="sb-container" style="height:418px">
         <div id="quartely-stack-chart">
-        <div style="width:100%;">
-        	 <div id="quarter-title">Quarterly sales by products</div>
-            <span id="close">&times;</span>
-        </div>
-           
+            <div style="width:100%;">
+                <div id="quarter-title">Quarterly sales by products</div>
+                <span id="close" ng-click="chartObj.reset()" ng-show="chartObj.isStackActive">&times;</span>
+            </div>
             <div id="quartely-stack-group-chart"></div>
         </div>
-        <div id="quartely-bubble-chart">
+        <div id="quartely-bubble-chart" ng-show="chartObj.showBubble">
             <div id="bubble-title">Revenue Generated</div>
             <div id="bubble-chart"></div>
         </div>
     </div>
-
-    <div id="heat-map">
-    </div>
+    <div id="heat-map"></div>
+    Choose a Product:
+    <ul class="list-unstyled">
+        <li ng-repeat=" p in chartObj.selectedProducts.products">
+            <input type="checkbox" ng-model="p.value" ng-checked="p.value">{{p.name}}
+        </li>
+    </ul>
 </div>
