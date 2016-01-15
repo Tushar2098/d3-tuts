@@ -1,7 +1,10 @@
 var quartelyStacked = function($compile, $filter) {
     function link(scope, ele, attr) {
         scope.chartObj = scope.value;
+        var countryNames = ['IND', 'CAN', 'USA'];
+        var colors = ['red', 'orange', 'green'];
 
+        
         scope.value.groupStackedChart = function() {
             console.info('scope.value : :', scope.value);
             var margin = {
@@ -137,7 +140,7 @@ var quartelyStacked = function($compile, $filter) {
                         return [d.name, d.quarter];
                     })
                     .attr('ng-click', function(d) {
-                        return "chartObj.setShadowToChart('" + d.quarter + "')";
+                        return "chartObj.drawMap('" + d.quarter + "'" + ',' + "'" + d.name + "')";
                     })
                     .attr('width', x1.rangeBand())
                     .attr('x', function(d) {
@@ -366,25 +369,154 @@ var quartelyStacked = function($compile, $filter) {
                     .style('fill', function(d) {
                         return color(d.name);
                     });
-                scope.chartObj.isStackActive = true;
-                scope.chartObj.showBubble = true;
-                scope.$apply();
-                $compile(ele)(scope);
+
+
+
+                scope.$apply(function() {
+                    scope.chartObj.showBubble = true;
+                    scope.chartObj.isStackActive = true;
+                    $compile(angular.element('#quartely-stack-group-chart'))(scope);
+                });
             });
         }; // setShadowToChart Ends
 
+        /********************************************
+            Calculates Revenue Expenditure for
+            each Country
+        *********************************************/
+        var computeExpenditure = function(countryArr) {
+            var arr = [];
+            angular.forEach(countryArr, function(country) {
+
+                for (var key in country) {
+                    var products = country[key];
+                    products.total = 0;
+                    for (var p in products) {
+                        if (p !== 'total') {
+
+                            var amountRaised = products[p].amountRaised;
+                            var amountSpent = products[p].amountSpent;
+                            products[p].expenditure = amountRaised / amountSpent;
+                            products.total += products[p].expenditure;
+                        }
+                    }
+                    products.total = products.total / Object.keys(products).length - 1;
+                }
+            });
+            return countryArr;
+        };
+
+
+
+        /********************************************
+            Formats the RAW data and add some fields
+        *********************************************/
+        var formatData = function(csv) {
+            var expd_countries = [];
+            var countryObj = {};
+            angular.forEach(csv, function(d) {
+
+
+                var product = d.Product,
+                    country = d.Country,
+                    spent = +d.Adv,
+                    raised = +d.Rev;
+
+
+                if (!countryObj.hasOwnProperty(country)) {
+                    countryNames.push(country);
+                    countryObj = {};
+                    countryObj[country] = {};
+                    countryObj[country][product] = {
+
+                        amountSpent: spent,
+                        amountRaised: raised
+                    };
+
+                    expd_countries.push(countryObj);
+
+                } else {
+                    if (!countryObj[country].hasOwnProperty(product)) {
+                        countryObj[country][product] = {
+                            amountSpent: spent,
+                            amountRaised: raised
+                        };
+                    } else {
+                        countryObj[country][product] = {
+                            amountSpent: countryObj[country][product].amountSpent + spent,
+                            amountRaised: countryObj[country][product].amountRaised + raised
+                        };
+                    }
+                }
+            });
+
+            return computeExpenditure(expd_countries);
+
+        };
+
+        /********************************************
+            Sorts the countries based on Revenue
+            Expenditure in ASC Order
+        *********************************************/
+        var sortByExpenditure = function(country1, country2) {
+
+
+            var total1, total2;
+            for (var i = countryNames.length - 1; i >= 0; i--) {
+
+                if (country1.hasOwnProperty(countryNames[i])) {
+
+                    total1 = country1[countryNames[i]].total;
+                }
+
+                if (country2.hasOwnProperty(countryNames[i])) {
+
+                    total2 = country2[countryNames[i]].total;
+                }
+
+            }
+
+            return total1 - total2; //ASC 
+        };
+
+
+
+        /********************************************
+            Augment color to each country based on 
+            their ranking.
+        *********************************************/
+        var assignColor = function(countries) {
+            var countryColor = {};
+            angular.forEach(countries, function(countryObj, index) {
+
+                for (var key in countryObj) {
+                    var products = countryObj[key];
+                    products.color = colors[index];
+                    countryColor[key] = products;
+                }
+
+            });
+
+            return countryColor;
+        };
+
+
         scope.value.drawMap = function(quarter, product) {
+            //Repaint the shadow stacked chart only once.
+            if (scope.chartObj.products.length === 0) {
+
+                this.setShadowToChart(quarter);
+            }
+
 
             $('#quartely-stack-chart').css({
                 'border-right': '1px solid #ccc'
             });
 
-
             var products = scope.chartObj.products;
             if (typeof product === 'string') {
 
                 if (products.indexOf(product) === -1) {
-
                     products.push(product);
                     scope.chartObj.selectedProducts.quarter = quarter;
                     var selectedProduct = {};
@@ -393,31 +525,42 @@ var quartelyStacked = function($compile, $filter) {
                     scope.chartObj.selectedProducts.products.push(selectedProduct);
                 }
 
-            } else if (typeof product === 'object' && product.length) {
+            } else if (product.constructor === Array && product instanceof Array) {
 
                 products = product;
             }
 
 
-            console.log('scope.chartObj.selectedProducts.products[drawMap] :: ', scope.chartObj.selectedProducts.products);
+            // console.log('scope.chartObj.selectedProducts.products[drawMap] :: ', scope.chartObj.selectedProducts.products);
 
 
             var numberFormat = d3.format('.2f');
 
-
+            var countryObj = {};
+            var arr = [];
             var worldChart = dc.geoChoroplethChart('#heat-map');
             var industryChart = dc.bubbleChart('#bubble-chart');
 
             d3.csv('./data/country.csv', function(csv) {
+
+
+                var countryArr = formatData(csv).sort(sortByExpenditure);
+
+                var countryColor = assignColor(countryArr);
+
+
                 var data = crossfilter(csv);
+
 
                 var countries = data.dimension(function(d) {
                     return d['Country'];
                 });
 
+
                 var stateRaisedSum = countries.group().reduceSum(function(d) {
                     return d['Rev'];
                 });
+
 
                 var productDim = data.dimension(function(d) {
                     var index = products.indexOf(d['Product']);
@@ -432,6 +575,7 @@ var quartelyStacked = function($compile, $filter) {
 
                 var statsByProduct = productDim.group().reduce(
                     function(p, v) {
+
                         if (v['Quarter'] == quarter && products.indexOf(v['Product']) !== -1) {
                             p.amountRaised += +v['Rev'];
                             p.amountSpent += +v['Adv'];
@@ -449,14 +593,15 @@ var quartelyStacked = function($compile, $filter) {
                     function() {
                         return {
                             amountRaised: 0,
-                            amountSpent: 0
+                            amountSpent: 0,
                         };
                     }
                 );
 
                 d3.json('./json/world.json', function(statesJson) {
-                    var width = 400;
+
                     var height = 320;
+                    var width = 400;
                     worldChart.width(width)
                         .height(height)
                         .dimension(countries)
@@ -467,19 +612,18 @@ var quartelyStacked = function($compile, $filter) {
                             .precision(0.1))
                         // .colors(d3.scale.quantize().range(['#b1fded', '#e3e6ff', '#ccff9a', '#fbeab4']))
                         // .colors(d3.scale.quantize().range(['#E2F2FF', '#C4E4FF', '#9ED2FF', '#81C5FF', '#6BBAFF', '#51AEFF', '#36A2FF', '#1E96FF', '#0089FF', '#0061B5']))
-                        .colors(d3.scale.quantize().range(['red','green']))
-                        // .colorDomain([0, 200])
-                        .colorCalculator(function(d) {
-                            console.log('colorCalculator :: ',d);
-                            return d ? worldChart.colors()(d) : '#ccc';
-                        })
+                        .colors(['red', 'orange', 'green'])
+                        .colorDomain([0, 200])
                         .overlayGeoJson(statesJson.features, 'state', function(d) {
+                            cid = d.id;
                             return d.id;
+                        })
+                        .colorCalculator(function(d) {
+                            return countryColor[cid] ? countryColor[cid].color : '#ccc';
                         })
                         .title(function(d) {
                             return 'Country: ' + d.key + '\nTotal Amount Raised: ' + numberFormat(d.value ? d.value : 0) + 'M';
                         });
-
 
 
                     industryChart.width(430)
@@ -528,13 +672,13 @@ var quartelyStacked = function($compile, $filter) {
                         return s + ' S';
                     });
 
-
-
-
                     dc.renderAll();
-
                 });
+
+                // scope.chartObj.isStackActive = true;
+                // scope.chartObj.showBubble = true;
                 // $compile(ele)(scope);
+
             });
         }; // drawMap Ends
 
@@ -548,17 +692,15 @@ var quartelyStacked = function($compile, $filter) {
                 products: []
             };
 
-            $('#bubble-chart').fadeOut('slow', function() {
-                $(this).html('');
-            });
+            $('#bubble-chart').html('');
+
 
             $('#quartely-stack-chart').css({
                 'border-right': '0'
             });
 
-            $('#heat-map').fadeOut('slow', function() {
-                $(this).html('');
-            });
+            $('#heat-map').html('');
+
 
             $('#quartely-stack-group-chart').html('');
             this.groupStackedChart();
@@ -566,7 +708,6 @@ var quartelyStacked = function($compile, $filter) {
             scope.chartObj.showBubble = false;
 
         };
-
         /********************************************
             Watch the product item selection
         *********************************************/
@@ -574,9 +715,9 @@ var quartelyStacked = function($compile, $filter) {
             console.log('newVal :: ', newVal);
             console.log('oldVal :: ', oldVal);
             var checked, unchecked;
-            if (newVal.products !== oldVal.products) {
+            if (newVal !== oldVal) {
                 var quarter = newVal.quarter;
-                debugger;
+                scope.chartObj.selectedProducts.quarter = quarter;
                 checked = $filter('filter')(newVal.products, {
                     'value': true
                 });
@@ -597,7 +738,7 @@ var quartelyStacked = function($compile, $filter) {
                     scope.chartObj.drawMap(quarter, scope.chartObj.products);
                     console.info('After Pushing [chartObj.products] :: ', scope.chartObj.products);
 
-                } else if (checked.length === 0) {
+                } else {
                     scope.chartObj.reset();
 
                 }
@@ -616,6 +757,18 @@ var quartelyStacked = function($compile, $filter) {
             value: '='
         },
         templateUrl: './templates/quarterwise.tmpl.html',
+        controller: function($scope) {
+            $scope.quarterlyChart = {
+                width: 1100,
+                products: [],
+                isStackActive: false,
+                showBubble: false,
+                selectedProducts: {
+                    quarter: '',
+                    products: []
+                }
+            };
+        },
         replace: true
     };
 };

@@ -1,19 +1,24 @@
-angular.module('GainTheory', ['ngAnimate','ui.router'])
+angular.module('GainTheory', ['ngAnimate', 'ui.router', 'gridster'])
     .config(function($stateProvider, $urlRouterProvider) {
 
 
 
-        $urlRouterProvider.otherwise("/state2");
+        $urlRouterProvider.otherwise("/dashboard");
         $stateProvider
-            .state('state1', {
-                url: "/state1",
-                templateUrl: "partials/state1.html"
+            .state('dashboard', {
+                url: "/dashboard",
+                templateUrl: "partials/dashboard.html"
             })
             .state('state2', {
                 url: "/state2",
                 templateUrl: "partials/annual-wise.html"
-            }).state('state3', {
+            })
+            .state('state3', {
                 url: "/state3",
                 templateUrl: "partials/quarter-wise.html"
+            })
+            .state('nationBubbleChart', {
+                url: "/nationBubbleChart",
+                templateUrl: "partials/nation-bubbleChart.html"
             });
     });

@@ -1,0 +1,44 @@
+<div ng-controller="DashboardController">
+    <div gridster="gridsterOptions">
+        <ul id="gridster-charts">
+            <!-- GROUP STACKED CHART -->
+            <li gridster-item size-x="3" size-y="3" class="bg-warning">
+                <p class="title">Quartely sales by products</p>
+                <dash-stack-chart></dash-stack-chart>
+            </li>
+            <!-- HEAT MAP -->
+            <li gridster-item size-x="3" size-y="3" class="bg-warning">
+                <p class="title">Sales by geography</p>
+                <world-map map-prop="map_bubble"></world-map>
+            </li>
+            <!-- LINE CHART -->
+            <li gridster-item size-x="3" size-y="3" class="bg-warning">
+                <p class="title">Ads Expenditure</p >
+                <line-chart></line-chart>
+            </li>
+            <!-- BUBBLE CHART -->
+            <li gridster-item size-x="3" size-y="3" class="bg-warning">
+                <p class="title">Revenue Generated</p>
+               <!--  <div id="legends">
+                   <div class="item">
+                       <img src="./assets/coke_icon.png" height="36" width="36" alt="">
+                       <span class="caption">Coke</span>
+                   </div>
+                   <div class="item">
+                       <img src="./assets/fanta_icon.png" height="36" width="36" alt="">
+                       <span class="caption">Fanta</span>
+                   </div>
+                   <div class="item">
+                       <img src="./assets/lime_icon.png" height="36" width="36" alt="">
+                       <span class="caption">Lemon</span>
+                   </div>
+                   <div class="item">
+                       <img src="./assets/orange_icon.png" height="36" width="36" alt="">
+                       <span class="caption">Orange</span>
+                   </div>
+               </div> -->
+                <div id="bubble-chart"></div>
+            </li>
+        </ul>
+    </div>
+</div>

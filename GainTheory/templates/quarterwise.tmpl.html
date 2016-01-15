@@ -13,10 +13,16 @@
         </div>
     </div>
     <div id="heat-map"></div>
-    Choose a Product:
-    <ul class="list-unstyled">
-        <li ng-repeat=" p in chartObj.selectedProducts.products">
-            <input type="checkbox" ng-model="p.value" ng-checked="p.value">{{p.name}}
-        </li>
-    </ul>
+    <div id="product-checkbox-group">
+        <!-- <label>Choose Product</label> -->
+        <ul class="list-unstyled">
+            <li ng-repeat=" p in chartObj.selectedProducts.products">
+                <div class="checkbox-inline">
+                    <label>
+                        <input type="checkbox" ng-model="p.value" ng-checked="p.value"> {{p.name}}
+                    </label>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>

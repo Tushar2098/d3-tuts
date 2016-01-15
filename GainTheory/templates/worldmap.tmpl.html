@@ -1,0 +1,15 @@
+<div>
+    <div id='world-map'></div>
+    <div>
+        <p class="label-warning" style="text-align: center">Atleast one product must be selected.</p>
+        <ul class="list-unstyled" style="margin-left: 2em;">
+            <li ng-repeat=" p in mapObj.selectedProducts.products">
+                <div class="checkbox-inline">
+                    <label>
+                        <input type="checkbox" ng-model="p.value" ng-checked="p.value"> {{p.name}}
+                    </label>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

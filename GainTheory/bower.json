@@ -1,0 +1,22 @@
+{
+  "name": "GainTheory",
+  "authors": [
+    "Tushar Gosalia <tusha.vg@thetechchefs.in>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-gridster": "~0.13.5",
+    "angular-sanitize": "~1.4.8"
+  }
+}

@@ -10,6 +10,10 @@ div[ui-view].ng-leave {
     animation: fadeOutRight 1s;
 }
 
+.active {
+    background: #73b0c2;
+}
+
 
 /******* N A V B A R ******/
 
@@ -17,6 +21,11 @@ div[ui-view].ng-leave {
     padding: 0;
     margin: 0;
     height: 87px;
+}
+
+.navbar-header {
+    height: 87px;
+    display: inline-block;
 }
 
 .navbar-default {
@@ -33,6 +42,7 @@ div[ui-view].ng-leave {
     height: 39px;
     margin-left: 8px;
     margin-top: 26px;
+    display: inline-block;
     margin-bottom: 26px;
     /*width: 628px;*/
     /*font-family: HelveticaNeue-Thin;*/
@@ -42,6 +52,20 @@ div[ui-view].ng-leave {
     font-size: 32px;
     letter-spacing: 1.4px;
     color: #595959;
+}
+
+#dropdown-menu {
+    display: inline-block;
+    float: right;
+    margin-top: 2.6em;
+    margin-right: 7em;
+}
+
+#dropdown-menu label {
+    margin-left: 1em;
+    letter-spacing: 1.5px;
+    font-size: 12px;
+    color: #626262;
 }
 
 .hide {
@@ -55,17 +79,97 @@ div[ui-view].ng-leave {
 
 /****** B O D Y *****/
 
-#chart-set ul>li {
-    padding: 22px 0;
-    border-bottom: 2px solid rgba(49, 49, 49, 0.2);
-    height: 78px;
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#loader-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+#loader {
+    background-image: url('../assets/ripple.gif');
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 1050;
+    background-size: cover;
+}
+
+#backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+
+/***********  D A S H B O A R D  **************/
+
+#gridster-charts .dc-chart {
+    float: none;
+}
+
+#gridster-charts #bubble-chart ~p.title {
+    display: inline-block;
+}
+
+#gridster-charts #legends {
+    display: inline-block;
+}
+
+#gridster-charts li {
+    cursor: move;
+    /*text-align: center;*/
+}
+
+#dash-stackChart,
+#world-map,
+#bubble-chart,
+#line-chart {
+    text-align: center;
+}
+
+div.item {
+    vertical-align: top;
+    display: inline-block;
+    text-align: center;
+    /*width: 120px;*/
+}
+
+.caption {
+    display: block;
+}
+
+#gridster-charts .title {
+    font-size: 18px;
+    letter-spacing: 2.3px;
+    font-weight: bold;
+    color: #000;
+    text-align: left;
+    margin-top: 25px;
+    margin-left: 38px;
 }
 
 #sidebar {
     background: #4d8295;
     width: 120px;
-    height: 763px;
+    height: 1200px;
     float: left;
+}
+
+#sidebar ul>li {
+    padding: 22px 0;
+    border-bottom: 2px solid rgba(49, 49, 49, 0.2);
+    /*height: 78px;*/
 }
 
 #content {
@@ -73,7 +177,7 @@ div[ui-view].ng-leave {
     background: #77b5c7;
     border-bottom: 2px solid rgba(49, 49, 49, 0.2);
     width: 1174px;
-    height: 763px;
+    height: 1200px;
 }
 
 #annual-title {
@@ -148,6 +252,11 @@ div[ui-view].ng-leave {
 
 /*****************CHARTS****************/
 
+#line-chart g.y line,
+path {
+    /*display: none;*/
+}
+
 .axis path,
 .axis line {
     fill: none;
@@ -156,7 +265,7 @@ div[ui-view].ng-leave {
 }
 
 text {
-    fill: #fff;
+    fill: #000;
 }
 
 .bar {
@@ -165,4 +274,8 @@ text {
 
 .x.axis path {
     display: none;
+}
+
+div#nationchart .x.axis path {
+    display: block;
 }
